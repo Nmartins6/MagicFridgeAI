@@ -42,11 +42,10 @@ public class FoodItemController {
     }
 
     //POST
-    public ResponseEntity<String> createFoodItem(@RequestBody FoodItem foodItem) {
-        FoodItem salvo = foodItemService.save(foodItem);
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(foodItem.getName() + "foi adcionado a lista corretamente");
+    @RequestMapping("/create")
+    public ResponseEntity<FoodItem> createFoodItem(@RequestBody FoodItem foodItem) {
+        FoodItem created = foodItemService.save(foodItem);
+        return ResponseEntity.ok(created);
     }
 
     //UPDATE
