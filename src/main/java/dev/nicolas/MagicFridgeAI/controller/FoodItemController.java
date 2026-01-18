@@ -2,10 +2,11 @@ package dev.nicolas.MagicFridgeAI.controller;
 
 import dev.nicolas.MagicFridgeAI.model.FoodItem;
 import dev.nicolas.MagicFridgeAI.service.FoodItemService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/food")
@@ -18,16 +19,57 @@ public class FoodItemController {
     }
 
     //GET
+    @RequestMapping("/list")
+    public ResponseEntity<List<FoodItem>> FindAlll() {
+        List<FoodItem> foodList = foodItemService.findAll();
+
+        if (foodList.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok(foodList);
+        }
+    }
+
+    @RequestMapping("/list/{id}")
+    public ResponseEntity<FoodItem> findById(@PathVariable Long id) {
+        FoodItem foodItem = foodItemService.findById(id);
+
+        if (foodItem != null) {
+            return ResponseEntity.ok(foodItem);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+    }
 
     //POST
-    public ResponseEntity<FoodItem> createFoodItem(@RequestBody FoodItem foodItem) {
-        FoodItem salvo = service.save(foodItem);
+    public ResponseEntity<String> createFoodItem(@RequestBody FoodItem foodItem) {
+        FoodItem salvo = foodItemService.save(foodItem);
 
-        return ResponseEntity.ok(salvo);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(foodItem.getName() + "foi adcionado a lista corretamente");
     }
 
     //UPDATE
+    @RequestMapping("/update/{id}")
+    public ResponseEntity<?> updateFood(@PathVariable Long id, @RequestBody FoodItem updatedFoodItem) {
+        if (foodItemService.findById(id) != null) {
+            foodItemService.updateFood(id, updatedFoodItem);
+
+            return ResponseEntity.ok(foodItemService.findById(id).getName() + "alterado com sucesso");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 
     //DELETE
+    @RequestMapping("delete/{id}")
+    public ResponseEntity<String> deleteFood(@PathVariable Long id) {
+        if (foodItemService.findById(id) != null) {
+            foodItemService.deleteFood(id);
+            return ResponseEntity.ok(foodItemService.findById(id).getName() + "Deletado com sucesso");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 
 }
