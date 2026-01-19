@@ -11,13 +11,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FoodItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
     private String category; //ENUM?????
+
     private int quantity;
-    private LocalDateTime ExpirationDate;
+
+    private LocalDateTime expirationDate;
 
     public Long getId() {
         return id;
@@ -52,10 +57,10 @@ public class FoodItem {
     }
 
     public LocalDateTime getExpirationDate() {
-        return ExpirationDate;
+        return expirationDate;
     }
 
     public void setExpirationDate(LocalDateTime expirationDate) {
-        ExpirationDate = expirationDate;
+        this.expirationDate = expirationDate;
     }
 }
