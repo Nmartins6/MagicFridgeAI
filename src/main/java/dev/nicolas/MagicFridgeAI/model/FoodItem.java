@@ -16,13 +16,20 @@ public class FoodItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
-    private String category; //ENUM?????
+    @Enumerated(EnumType.STRING)
+    private Category category;
 
+    @Column(nullable = false)
     private int quantity;
 
+    @Column(name = "expiration_date", nullable = false)
     private LocalDateTime expirationDate;
+
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     public Long getId() {
         return id;
@@ -40,11 +47,11 @@ public class FoodItem {
         this.name = name;
     }
 
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 
