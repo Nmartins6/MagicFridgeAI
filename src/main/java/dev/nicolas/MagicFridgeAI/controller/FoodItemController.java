@@ -54,7 +54,7 @@ public class FoodItemController {
         if (foodItemService.findById(id) != null) {
             foodItemService.updateFood(id, updatedFoodItem);
 
-            return ResponseEntity.ok(foodItemService.findById(id).getName() + "alterado com sucesso");
+            return ResponseEntity.ok(foodItemService.findById(id).getName() + " alterado com sucesso");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -65,7 +65,7 @@ public class FoodItemController {
     public ResponseEntity<String> deleteFood(@PathVariable Long id) {
         if (foodItemService.findById(id) != null) {
             foodItemService.deleteFood(id);
-            return ResponseEntity.ok(foodItemService.findById(id).getName() + "Deletado com sucesso");
+            return ResponseEntity.ok("Deletado com sucesso");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
