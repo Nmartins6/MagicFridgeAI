@@ -18,8 +18,7 @@ public class RecipeController {
     }
 
     @GetMapping
-    public Mono<ResponseEntity<String>> recipe() {
-        return chatGptService.generateRecipe()
-                .map(ResponseEntity::ok);
+    public Mono<String> generateRecipe() {
+        return chatGptService.generateRecipe();
     }
 }

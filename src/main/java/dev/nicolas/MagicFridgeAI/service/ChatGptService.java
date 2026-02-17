@@ -5,39 +5,56 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import org.springframework.beans.factory.annotation.Value;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class ChatGptService {
 
     private final WebClient webClient;
-    private final String apiKey = System.getenv("OPENAI_API_KEY");
+    private String apiKey = System.getenv("OPENAI_API_KEY");
 
-    public ChatGptService(WebClient.Builder builder) {
-        if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException("OPENAI_API_KEY não está definida no ambiente.");
-        }
-
-        this.webClient = builder
-                .baseUrl("https://api.openai.com/v1")
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
-                .build();
+    public ChatGptService(WebClient webClient) {
+        this.webClient = webClient;
     }
 
     public Mono<String> generateRecipe() {
-        String prompt = "Verificando conexão";
+        String prompt = "Teste de conexão";
 
         Map<String, Object> body = Map.of(
-                "model", "gpt-4.1",
+                "model", "gpt-4o",
                 "input", prompt
         );
 
         return webClient.post()
-                .uri("/responses")
-                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
                 .bodyValue(body)
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(Map.class)
+                .map(response -> {
+
+                    var outputs = (List<Map<String, Object>>) response.get("output");
+
+                    if (outputs == null || outputs.isEmpty()) {
+                        return "Nenhuma receita foi gerada";
+                    }
+
+                    for (var output : outputs) {
+                        var contents = (List<Map<String, Object>>) output.get("content");
+
+                        if (contents == null || contents.isEmpty()) continue;
+
+                        for (var content : contents) {
+                            if ("output_text".equals(content.get("type"))) {
+                                return (String) content.get("text");
+                            }
+                        }
+                    }
+
+                    return "Nenhuma receita foi gerada";
+                });
     }
 }
